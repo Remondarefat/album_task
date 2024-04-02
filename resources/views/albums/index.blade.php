@@ -21,6 +21,34 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this album?')">Delete</button>
                         </form>
+                        <form action="{{ route('albums.movePictures', $album) }}" method="POST">
+    @csrf
+    <!-- Display pictures -->
+    @foreach ($album->pictures as $picture)
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="picture_ids[]" value="{{ $picture->id }}">
+            <label class="form-check-label" for="picture{{ $picture->id }}">
+                {{ $picture->name }}
+            </label>
+        </div>
+    @endforeach
+
+    <!-- Select destination album -->
+    <div class="mb-3">
+        <label for="destination_album_id" class="form-label">Destination Album</label>
+        <select class="form-select" id="destination_album_id" name="destination_album_id" required>
+            @foreach ($albums as $otherAlbum)
+                @if ($otherAlbum->id !== $album->id)
+                    <option value="{{ $otherAlbum->id }}">{{ $otherAlbum->name }}</option>
+                @endif
+            @endforeach
+        </select>
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit" class="btn btn-primary">Move Selected Pictures</button>
+</form>
+
                     </div>
                 </div>
             </div>

@@ -59,6 +59,24 @@ class AlbumController extends Controller
             ->with('success', 'Album updated successfully.');
     }
 
+
+    public function movePictures(Request $request, Album $album)
+    {
+        $request->validate([
+            'destination_album_id' => 'required|exists:albums,id',
+            'picture_ids' => 'required|array',
+            'picture_ids.*' => 'exists:pictures,id',
+        ]);
+
+        $destinationAlbum = Album::findOrFail($request->destination_album_id);
+        $pictureIds = $request->picture_ids;
+
+        // Move selected pictures to the destination album
+        Picture::whereIn('id', $pictureIds)->update(['album_id' => $destinationAlbum->id]);
+
+        return redirect()->route('albums.index')->with('success', 'Pictures moved successfully.');
+    }
+
     // Remove the specified album from storage.
     public function destroy(Album $album)
     {
@@ -68,4 +86,6 @@ class AlbumController extends Controller
         return redirect()->route('albums.index')
             ->with('success', 'Album deleted successfully.');
     }
+
+
 }
